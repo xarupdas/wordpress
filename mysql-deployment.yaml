@@ -1,0 +1,62 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-service-test
+  labels:
+    app: wordpressapp
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: wordpressapp
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: wordpressapp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment-test
+  labels:
+    app: wordpressapp
+spec:
+  selector:
+    matchLabels:
+      app: wordpressapp
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpressapp
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql-container-test
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "ebz25Vpz2VgJC_gG"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim

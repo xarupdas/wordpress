@@ -1,0 +1,67 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: wordpress-service-test
+  labels:
+    app: wordpressapp
+spec:  
+  ports:
+    - port: 80
+  selector:
+    app: wordpressapp   
+    tier: frontend
+  type: LoadBalancer 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pv-claim
+  labels:
+    app: wordpressapp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deployment-test
+  labels:
+    app: wordpressapp
+spec:  
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: wordpressapp
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wordpressapp
+        tier: frontend
+    spec:
+      containers:
+      - image: arupdasdocker/wordpress:v1
+        name: wordpress-container-test
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: mysql-service-test
+        - name: WORDPRESS_DB_USER
+          value: "root"
+        - name: WORDPRESS_DB_PASSWORD
+          value: "ebz25Vpz2VgJC_gG"
+        ports:
+        - containerPort: 80
+          name: wordpresshttp
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: wordpress-pv-claim
