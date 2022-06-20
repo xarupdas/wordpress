@@ -8,14 +8,13 @@ spec:
   ports:
     - port: 3306
   selector:
-    app: wordpressapp
-    tier: mysql
+    app: wordpressapp    
   clusterIP: None
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
+  name: mysql-persistent-storage
   labels:
     app: wordpressapp
 spec:
@@ -35,14 +34,12 @@ spec:
   selector:
     matchLabels:
       app: wordpressapp
-      tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: wordpressapp
-        tier: mysql
     spec:
       containers:
       - image: mysql:5.7
@@ -59,4 +56,4 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pv-claim
+          claimName: mysql-persistent-storage

@@ -9,13 +9,12 @@ spec:
     - port: 80
   selector:
     app: wordpressapp   
-    tier: frontend
   type: LoadBalancer 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wordpress-pv-claim
+  name: wordpress-persistent-storage
   labels:
     app: wordpressapp
 spec:
@@ -36,14 +35,12 @@ spec:
   selector:
     matchLabels:
       app: wordpressapp
-      tier: frontend
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: wordpressapp
-        tier: frontend
     spec:
       containers:
       - image: arupdasdocker/wordpress:v1
@@ -64,4 +61,4 @@ spec:
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: wordpress-pv-claim
+          claimName: wordpress-persistent-storage

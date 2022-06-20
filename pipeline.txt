@@ -2,12 +2,13 @@
 	try{		
 			def newApp
 			def registry = 'arupdasdocker/wordpress'
-			def registryCredential = 'Githublogin'
+			def gitCredential = 'Githublogin'
+			def registryCredential = 'Dockerlogin'
 			def version = 'v1.'		
 			
 			stage('Stage 1 - Code Checkout (Github)') {
-				git branch: 'master',
-					credentialsId: 'Githublogin',
+				git branch: 'main',
+					credentialsId: 'gitCredential',
 					url: 'https://github.com/xarupdas/wordpress.git'
 			}
 
